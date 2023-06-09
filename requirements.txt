@@ -1,0 +1,10 @@
+bitsandbytes==0.39.0
+transformers @ git+https://github.com/huggingface/transformers.git
+peft @ git+https://github.com/huggingface/peft.git
+accelerate @ git+https://github.com/huggingface/accelerate.git
+einops==0.6.1
+sentencepiece==0.1.99
+wandb==0.15.3
+importlib_metadata
+datasets
+ftfy
