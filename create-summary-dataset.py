@@ -148,6 +148,8 @@ def main(args):
         if args.validation_split != 0 or args.test_split != 0:
             print("Note, validation/test splits will not be chunked")
 
+    index = {id: index for (index, id) in enumerate(ids)}
+
     if args.shard is not None:
         parts = args.shard.split(",")
         this_shard = int(parts[0])
@@ -158,8 +160,6 @@ def main(args):
 
         ids = [ids[i]
                for i in range(0, len(ids)) if (i % num_shards) == this_shard]
-
-    index = {id: index for (index, id) in enumerate(ids)}
 
     tokenizer = AutoTokenizer.from_pretrained(
         args.stats_for_tokenizer) if args.stats_for_tokenizer is not None else None
