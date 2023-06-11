@@ -225,7 +225,7 @@ def main(args):
 
     output_name = f"{args.dataset.split('/')[1]}-summarized"
 
-    output_dir = os.path.join("outputs", output_name, "data")
+    output_dir = os.path.join(args.output_dir, output_name, "data")
     os.makedirs(output_dir, exist_ok=True)
 
     shard_suffix = f"-{this_shard+1:05}" if args.shard is not None else ""
@@ -256,8 +256,6 @@ def main(args):
 
 def parse_args():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--seed", type=int, default=42)
-
     parser.add_argument("--dataset", type=str)
 
     parser.add_argument("--stats_for_tokenizer", type=str)
@@ -266,7 +264,7 @@ def parse_args():
     parser.add_argument("--summarizer", type=str,
                         default="emozilla/mpt-7b-storysummarizer")
     parser.add_argument("--penalty_alpha", type=float, default=0.6)
-    parser.add_argument("--top_k", type=int, default=2)
+    parser.add_argument("--top_k", type=int, default=4)
     parser.add_argument("--load_in_4bit", action="store_true")
     parser.add_argument("--summary_max_tokens", type=int, default=128)
     parser.add_argument("--no_summary", action="store_true")

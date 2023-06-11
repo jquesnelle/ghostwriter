@@ -2,3 +2,5 @@ env/
 outputs/
 __pycache__/
 .vscode/
+train-*
+wandb/
