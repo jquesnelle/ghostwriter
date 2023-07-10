@@ -54,7 +54,7 @@ def parse_args():
     parser.add_argument("--max_seq_len", type=int)
     parser.add_argument("--summary_prompt", type=str, default="\n\n### Summary:\n")
     parser.add_argument("--passage_prompt", type=str, default="\n\n### Passage:\n")
-    parser.add_argument("--header_prompt", type=str, default="Below are subsequent passages from a novel. Continue the story in a creative yet coherent manner according to the preceding summaries.")
+    parser.add_argument("--header_prompt", type=str, default="Below are subsequent passages from a novel. Continue the story in a creative yet coherent manner according to the preceding summary.")
 
     parser.add_argument("--output_dir", type=str, default="outputs")
     
