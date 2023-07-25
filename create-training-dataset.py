@@ -16,24 +16,38 @@ def main(args):
     data = []
     pending_entry = None
     pending_entry_tokenized = []
+    last_passage_index = -1
     
     i = 0
     bar = tqdm(total=len(dataset), desc="Passage")
     while i < len(dataset):
         entry = dataset[i]
         if pending_entry is None:
-            pending_entry = {"text": f"{args.header_prompt}"}
-            pending_entry_tokenized = tokenizer(pending_entry["text"]).input_ids
+            if args.sharegpt:
+                pending_entry = {"conversations": []}
+                pending_entry_tokenized = []
+            else:
+                pending_entry = {"text": f"{args.header_prompt}"}
+                pending_entry_tokenized = tokenizer(pending_entry["text"]).input_ids
 
         to_add = f"{args.summary_prompt}{entry['summary']}{args.passage_prompt}{entry['passage']}"
         to_add_tokenized = tokenizer(to_add).input_ids
+        if args.sharegpt:
+            to_add = [{"from": args.summary_prompt, "value": entry["summary"]}, {"from": args.passage_prompt, "value": entry["passage"]}]
 
-        if len(to_add_tokenized) + len(pending_entry_tokenized) > args.max_seq_len:
+        changed_book = entry["passage_index"] != last_passage_index + 1
+        if len(to_add_tokenized) + len(pending_entry_tokenized) > args.max_seq_len or changed_book:
             data.append(json.dumps(pending_entry))
             pending_entry = None
+            if changed_book:
+                last_passage_index = -1
         else:
-            pending_entry["text"] += to_add
+            if args.sharegpt:
+                pending_entry["conversations"].extend(to_add)
+            else:
+                pending_entry["text"] += to_add
             pending_entry_tokenized.extend(to_add_tokenized)
+            last_passage_index = entry["passage_index"]
             i += 1
             bar.update()
         
@@ -51,10 +65,11 @@ def parse_args():
     parser.add_argument("--dataset", type=str)
     parser.add_argument("--tokenizer", type=str)
 
-    parser.add_argument("--max_seq_len", type=int)
-    parser.add_argument("--summary_prompt", type=str, default="\n\n### Summary:\n")
-    parser.add_argument("--passage_prompt", type=str, default="\n\n### Passage:\n")
-    parser.add_argument("--header_prompt", type=str, default="Below are subsequent passages from a novel. Continue the story in a creative yet coherent manner according to the preceding summary.")
+    parser.add_argument("--max-seq-len", type=int)
+    parser.add_argument("--summary-prompt", type=str, default="\n\n### Summary:\n")
+    parser.add_argument("--passage-prompt", type=str, default="\n\n### Passage:\n")
+    parser.add_argument("--header-prompt", type=str, default="Below are subsequent passages from a novel. Continue the story in a creative yet coherent manner according to the preceding summary.")
+    parser.add_argument("--sharegpt", action="store_true")
 
     parser.add_argument("--output_dir", type=str, default="outputs")
     
